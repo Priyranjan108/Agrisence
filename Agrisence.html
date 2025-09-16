@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriSense - AI-Powered Crop Recommendation System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2d5a27;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #4CAF50;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #4CAF50 100%);
+            z-index: -1;
+        }
+
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .float-element {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .float-element:nth-child(1) { width: 80px; height: 80px; top: 20%; left: 10%; animation-delay: 0s; }
+        .float-element:nth-child(2) { width: 60px; height: 60px; top: 60%; right: 15%; animation-delay: 2s; }
+        .float-element:nth-child(3) { width: 100px; height: 100px; bottom: 20%; left: 20%; animation-delay: 4s; }
+        .float-element:nth-child(4) { width: 40px; height: 40px; top: 30%; right: 30%; animation-delay: 1s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(120deg); }
+            66% { transform: translateY(-10px) rotate(240deg); }
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease forwards 0.3s;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+            animation: fadeInUp 1s ease forwards 0.6s;
+            opacity: 0;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.6);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Sections */
+        .section {
+            padding: 6rem 0;
+            background: white;
+        }
+
+        .section:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2d5a27;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border-radius: 2px;
+        }
+
+        /* Problem Statement */
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .problem-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+        }
+
+        .problem-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .problem-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        /* Solution Features */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+            animation: shine 0.8s ease;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Technical Stack */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .tech-item {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .tech-item:hover {
+            border-color: #4CAF50;
+            transform: scale(1.05);
+        }
+
+        .tech-icon {
+            font-size: 2rem;
+            color: #4CAF50;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Implementation Timeline */
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #4CAF50, #45a049);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin: 2rem 0;
+            opacity: 0;
+            animation: slideIn 0.6s ease forwards;
+        }
+
+        .timeline-item:nth-child(1) { animation-delay: 0.1s; }
+        .timeline-item:nth-child(2) { animation-delay: 0.2s; }
+        .timeline-item:nth-child(3) { animation-delay: 0.3s; }
+        .timeline-item:nth-child(4) { animation-delay: 0.4s; }
+        .timeline-item:nth-child(5) { animation-delay: 0.5s; }
+        .timeline-item:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .timeline-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 45%;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content {
+            margin-left: 55%;
+        }
+
+        .timeline-number {
+            position: absolute;
+            left: 50%;
+            top: 2rem;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            z-index: 1;
+        }
+
+        /* Team Section */
+        .team-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .team-avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            font-weight: 700;
+        }
+
+        /* Interactive Demo */
+        .demo-container {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 3rem;
+            border-radius: 20px;
+            color: white;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .demo-input {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 0.5rem;
+            width: 200px;
+        }
+
+        .demo-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .demo-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 1rem;
+        }
+
+        .demo-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .demo-result {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-top: 2rem;
+            display: none;
+        }
+
+        /* Footer */
+        footer {
+            background: #2d5a27;
+            color: white;
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: #4CAF50;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .timeline::before {
+                left: 20px;
+            }
+
+            .timeline-content {
+                width: calc(100% - 60px);
+                margin-left: 60px !important;
+            }
+
+            .timeline-number {
+                left: 20px;
+            }
+
+            .demo-input {
+                width: 100%;
+                margin: 0.5rem 0;
+            }
+        }
+
+        /* Scroll animations */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <div class="logo">🌱 AgriSense</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#problem">Problem</a></li>
+                <li><a href="#solution">Solution</a></li>
+                <li><a href="#tech">Technology</a></li>
+                <li><a href="#demo">Demo</a></li>
+                <li><a href="#team">Team</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-bg"></div>
+        <div class="floating-elements">
+            <div class="float-element"></div>
+            <div class="float-element"></div>
+            <div class="float-element"></div>
+            <div class="float-element"></div>
+        </div>
+        <div class="hero-content">
+            <h1>🌾 AgriSense</h1>
+            <p>AI & LLM-Driven Crop Recommendation System for Indian Farmers</p>
+            <p>Empowering sustainable agriculture through intelligent crop recommendations</p>
+            <a href="#solution" class="cta-button">Explore Solution</a>
+        </div>
+    </section>
+
+    <!-- Problem Statement -->
+    <section id="problem" class="section">
+        <div class="container">
+            <h2 class="section-title animate-on-scroll">Problem Statement</h2>
+            <p class="animate-on-scroll" style="text-align: center; font-size: 1.1rem; max-width: 800px; margin: 0 auto 3rem;">
+                Indian farmers face critical challenges in crop selection, leading to reduced yields, 
+                economic losses, and unsustainable farming practices.
+            </p>
+            
+            <div class="problem-grid">
+                <div class="problem-card animate-on-scroll">
+                    <div class="problem-icon">📊</div>
+                    <h3>Lack of Data-Driven Decisions</h3>
+                    <p>Farmers rely on traditional knowledge and guesswork rather than scientific data for crop selection.</p>
+                </div>
+                
+                <div class="problem-card animate-on-scroll">
+                    <div class="problem-icon">💰</div>
+                    <h3>Economic Losses</h3>
+                    <p>Poor crop choices lead to reduced yields, increased input costs, and financial instability.</p>
+                </div>
+                
+                <div class="problem-card animate-on-scroll">
+                    <div class="problem-icon">🌍</div>
+                    <h3>Unsustainable Practices</h3>
+                    <p>Mismatched crops and conditions result in inefficient resource use and environmental degradation.</p>
+                </div>
+                
+                <div class="problem-card animate-on-scroll">
+                    <div class="problem-icon">📱</div>
+                    <h3>Technology Gap</h3>
+                    <p>Complex agricultural data remains inaccessible to farmers due to technical barriers.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution -->
+    <section id="solution" class="section">
+        <div class="container">
+            <h2 class="section-title animate-on-scroll">Our Solution: AgriSense</h2>
+            
+            <div class="features-grid">
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI-Powered Recommendations</h3>
+                    <p>Advanced neural networks analyze 500+ Indian crops to provide top 3 recommendations with confidence scores.</p>
+                </div>
+                
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">💬</div>
+                    <h3>Natural Language Interface</h3>
+                    <p>LLM integration allows farmers to interact naturally, get explanations, and ask follow-up questions.</p>
+                </div>
+                
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">🌤️</div>
+                    <h3>Real-time Weather Integration</h3>
+                    <p>Automatically fetches weather data based on location for highly relevant recommendations.</p>
+                </div>
+                
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">📈</div>
+                    <h3>Market Insights</h3>
+                    <p>Provides cultivation tips, pest management advice, and market trends for informed decision-making.</p>
+                </div>
+                
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Minimum Input, Maximum Output</h3>
+                    <p>Requires only basic soil parameters and location to generate comprehensive crop recommendations.</p>
+                </div>
+                
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">🇮🇳</div>
+                    <h3>India-Specific Dataset</h3>
+                    <p>Extensive database tailored for diverse Indian agricultural conditions and regional variations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technology Stack -->
+    <section id="tech" class="section">
+        <div class="container">
+            <h2 class="section-title animate-on-scroll">Technology Stack</h2>
+            
+            <div class="tech-grid">
+                <div class="tech-item animate-on-scroll">
+                    <div class="tech-icon">🐍</div>
+                    <h4>Python</h4>
+                    <p>Backend & AI/ML</p>
+                </div>
+                
+                <div class="tech-item animate-on-scroll">
+                    <div class="tech-icon">⚛️</div>
+                    <h4>React.js</h4>
+                    <p>Frontend Framework</p>
+                </div>
+                
+                <div class="tech-item animate-on-scroll">
+                    <div class="tech-icon">🔥</div>
+                    <h4>PyTorch</h4>
+                    <p>Neural Networks</p>
+                </div>
+                
+                <div class="tech-item animate-on-scroll">
+                    <div class="tech-icon">🤗</div>
+                    <h4>Hugging Face</h4>
+                    <p>LLM Integration</p>
+                </div>
+                
+                <div class="tech-item animate-on-scroll">
+                    <div class="tech-icon">⚡</div>
+                    <h4>FastAPI</h4>
+                    <p>Backend Framework</p>
+                </div>
+                
+                <div class="tech-item animate-on-scroll">
+                    <div class="tech-icon">🗄️</div>
+                    <h4>PostgreSQL</h4>
+                    <p>Database</p>
+                </div>
+                
+                <div class="tech-item animate-on-scroll">
+                    <div class="tech-icon">☁️</div>
+                    <h4>AWS/GCP</h4>
+                    <p>Cloud Platform</p>
+                </div>
+                
+                <div class="tech-item animate-on-scroll">
+                    <div class="tech-icon">📱</div>
+                    <h4>React Native</h4>
+                    <p>Mobile App</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Implementation Timeline -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title animate-on-scroll">Implementation Timeline</h2>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-number">1</div>
+                    <div class="timeline-content">
+                        <h3>Data Acquisition & Preprocessing</h3>
+                        <p>Collect and curate data for 500+ Indian crops from ICAR, State Agricultural Departments, and research papers. Develop robust data cleaning and feature engineering pipelines.</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-number">2</div>
+                    <div class="timeline-content">
+                        <h3>Neural Network Development</h3>
+                        <p>Design and implement Multi-Layer Perceptron (MLP) for crop prediction. Train and fine-tune the model with rigorous cross-validation and testing.</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-number">3</div>
+                    <div class="timeline-content">
+                        <h3>LLM Integration & Fine-tuning</h3>
+                        <p>Select and fine-tune open-source LLM on agricultural domain-specific corpus. Develop robust prompt engineering strategies.</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-number">4</div>
+                    <div class="timeline-content">
+                        <h3>Backend & API Development</h3>
+                        <p>Build FastAPI backend with LLM interface and NN prediction endpoints. Integrate real-time weather data and design database schema.</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-number">5</div>
+                    <div class="timeline-content">
+                        <h3>Frontend Development</h3>
+                        <p>Develop intuitive web and mobile UI for farmer input and recommendation display. Ensure seamless integration with backend APIs.</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-number">6</div>
+                    <div class="timeline-content">
+                        <h3>Deployment & Iteration</h3>
+                        <p>Deploy full system on cloud platform. Gather user feedback, monitor performance, and iterate for continuous improvement.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Demo -->
+    <section id="demo" class="section">
+        <div class="container">
+            <h2 class="section-title animate-on-scroll">Interactive Demo</h2>
+            
+            <div class="demo-container animate-on-scroll">
+                <h3>Try AgriSense Crop Recommendation</h3>
+                <p>Enter your field parameters to get AI-powered crop recommendations</p>
+                
+                <div style="margin: 2rem 0;">
+                    <input type="number" class="demo-input" id="temperature" placeholder="Temperature (°C)" min="0" max="50">
+                    <input type="number" class="demo-input" id="ph" placeholder="Soil pH" min="0" max="14" step="0.1">
+                    <input type="number" class="demo-input" id="nitrogen" placeholder="Nitrogen (N)" min="0" max="200">
+                    <input type="number" class="demo-input" id="phosphorus" placeholder="Phosphorus (P)" min="0" max="200">
+                    <input type="number" class="demo-input" id="potassium" placeholder="Potassium (K)" min="0" max="200">
+                    <input type="text" class="demo-input" id="location" placeholder="Location">
+                </div>
+                
+                <button class="demo-button" onclick="generateRecommendations()">Get Crop Recommendations 🌱</button>
+                
+                <div class="demo-result" id="demoResult">
+                    <h4>🌾 Top 3 Crop Recommendations:</h4>
+                    <div id="recommendations"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team -->
+    <section id="team" class="section">
+        <div class="container">
+            <h2 class="section-title animate-on-scroll">Meet Team NeuralNinjas</h2>
+            
+            <div class="team-card animate-on-scroll">
+                <div class="team-avatar">NN</div>
+                <h3>NeuralNinjas</h3>
+                <p><strong>Problem Statement ID:</strong> 25030</p>
+                <p><strong>Theme:</strong> Smart Agriculture / AI & ML / Rural Development</p>
+                <p><strong>Category:</strong> Software</p>
+                <p style="margin-top: 1rem;">Passionate about leveraging AI to solve real-world agricultural challenges and empower Indian farmers with data-driven insights.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>AgriSense</h3>
+                    <p>Empowering Indian farmers with AI-driven crop recommendations for sustainable agriculture.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Technology</h3>
+                    <p>Built with cutting-edge AI, ML, and LLM technologies to provide accurate, contextual agricultural insights.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Impact</h3>
+                    <p>Supporting 500+ Indian crops with data-driven recommendations for better yields and sustainable farming.</p>
+                </div>
+            </div>
+            
+            <div style="text-align: center; padding-top: 2rem; border-top: 1px solid #4CAF50;">
+                <p>&copy; 2025 NeuralNinjas - AgriSense. Revolutionizing Indian Agriculture with AI.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navigation scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Demo functionality
+        function generateRecommendations() {
+            const temperature = document.getElementById('temperature').value;
+            const ph = document.getElementById('ph').value;
+            const nitrogen = document.getElementById('nitrogen').value;
+            const phosphorus = document.getElementById('phosphorus').value;
+            const potassium = document.getElementById('potassium').value;
+            const location = document.getElementById('location').value;
+
+            if (!temperature || !ph || !nitrogen || !phosphorus || !potassium) {
+                alert('Please fill in all soil parameters to get recommendations!');
+                return;
+            }
+
+            // Simulate AI processing
+            const processingElement = document.getElementById('recommendations');
+            processingElement.innerHTML = '<p>🤖 AI is analyzing your soil parameters...</p>';
+            document.getElementById('demoResult').style.display = 'block';
+
+            // Simulate different crop recommendations based on input values
+            setTimeout(() => {
+                let recommendations = [];
+                
+                // Simple logic to demonstrate different recommendations based on inputs
+                const temp = parseFloat(temperature);
+                const phValue = parseFloat(ph);
+                const n = parseFloat(nitrogen);
+                const p = parseFloat(phosphorus);
+                const k = parseFloat(potassium);
+
+                if (temp >= 20 && temp <= 30 && phValue >= 6 && phValue <= 7.5) {
+                    if (n > 100 && p > 50 && k > 50) {
+                        recommendations = [
+                            { crop: 'Rice', confidence: 92, reason: 'Optimal temperature and high nutrient levels perfect for rice cultivation' },
+                            { crop: 'Wheat', confidence: 88, reason: 'Good soil conditions and balanced NPK for wheat production' },
+                            { crop: 'Sugarcane', confidence: 85, reason: 'Rich soil nutrients support sugarcane growth' }
+                        ];
+                    } else {
+                        recommendations = [
+                            { crop: 'Maize', confidence: 89, reason: 'Moderate nutrient requirements match your soil conditions' },
+                            { crop: 'Barley', confidence: 84, reason: 'Suitable temperature and pH for barley cultivation' },
+                            { crop: 'Millet', confidence: 78, reason: 'Drought-resistant crop suitable for your conditions' }
+                        ];
+                    }
+                } else if (temp >= 25 && temp <= 35) {
+                    recommendations = [
+                        { crop: 'Cotton', confidence: 91, reason: 'High temperature ideal for cotton with current soil nutrients' },
+                        { crop: 'Groundnut', confidence: 86, reason: 'Warm climate and soil conditions favor groundnut cultivation' },
+                        { crop: 'Sorghum', confidence: 82, reason: 'Heat-tolerant crop matching your environmental conditions' }
+                    ];
+                } else if (temp >= 15 && temp <= 25) {
+                    recommendations = [
+                        { crop: 'Potato', confidence: 90, reason: 'Cool temperature and soil pH perfect for potato cultivation' },
+                        { crop: 'Peas', confidence: 85, reason: 'Moderate temperature and nutrients suitable for pea production' },
+                        { crop: 'Cabbage', confidence: 80, reason: 'Cool weather crop with good soil compatibility' }
+                    ];
+                } else {
+                    recommendations = [
+                        { crop: 'Millet', confidence: 85, reason: 'Hardy crop suitable for challenging conditions' },
+                        { crop: 'Sorghum', confidence: 80, reason: 'Drought and temperature resilient option' },
+                        { crop: 'Barley', confidence: 75, reason: 'Adaptable cereal for varied conditions' }
+                    ];
+                }
+
+                let html = '';
+                recommendations.forEach((rec, index) => {
+                    const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉';
+                    html += `
+                        <div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 10px; margin: 1rem 0; border-left: 4px solid #4CAF50;">
+                            <h4>${medal} ${rec.crop} - ${rec.confidence}% Match</h4>
+                            <p><strong>Why this crop?</strong> ${rec.reason}</p>
+                            <div style="background: rgba(76,175,80,0.2); padding: 0.5rem; border-radius: 5px; margin-top: 1rem;">
+                                <small><strong>💡 AI Insight:</strong> Based on your soil NPK (${n}-${p}-${k}) and pH ${phValue}, this crop shows excellent compatibility with weather conditions in ${location || 'your region'}.</small>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                    <div style="margin-top: 2rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                        <h4>🌟 Additional Recommendations:</h4>
+                        <p>• Consider soil testing every 6 months for optimal results</p>
+                        <p>• Monitor local weather patterns for planting timing</p>
+                        <p>• Consult with local agricultural experts for region-specific advice</p>
+                        <p>• Use organic fertilizers to improve long-term soil health</p>
+                    </div>
+                `;
+
+                processingElement.innerHTML = html;
+            }, 2000);
+        }
+
+        // Add some interactive particles on scroll
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.style.cssText = `
+                position: fixed;
+                width: 4px;
+                height: 4px;
+                background: #4CAF50;
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 1000;
+                opacity: 0.7;
+            `;
+            
+            particle.style.left = Math.random() * window.innerWidth + 'px';
+            particle.style.top = window.innerHeight + 'px';
+            
+            document.body.appendChild(particle);
+            
+            const animation = particle.animate([
+                { transform: 'translateY(0px)', opacity: 0.7 },
+                { transform: 'translateY(-' + (window.innerHeight + 100) + 'px)', opacity: 0 }
+            ], {
+                duration: 3000,
+                easing: 'ease-out'
+            });
+            
+            animation.onfinish = () => particle.remove();
+        }
+
+        // Create particles on scroll
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            if (currentScroll > lastScroll && Math.random() > 0.95) {
+                createParticle();
+            }
+            lastScroll = currentScroll;
+        });
+
+        // Add typing effect to hero text
+        function typeWriter(element, text, speed = 100) {
+            let i = 0;
+            element.innerHTML = '';
+            function typing() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(typing, speed);
+                }
+            }
+            typing();
+        }
+
+        // Initialize typing effect after page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const heroTitle = document.querySelector('.hero-content h1');
+                if (heroTitle) {
+                    typeWriter(heroTitle, '🌾 AgriSense', 150);
+                }
+            }, 1000);
+        });
+
+        // Add hover effects for cards
+        document.querySelectorAll('.problem-card, .feature-card, .tech-item').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Add progress bar for page scroll
+        const progressBar = document.createElement('div');
+        progressBar.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            z-index: 9999;
+            transition: width 0.3s ease;
+        `;
+        document.body.appendChild(progressBar);
+
+        window.addEventListener('scroll', () => {
+            const scrolled = (window.pageYOffset / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+            progressBar.style.width = scrolled + '%';
+        });
+
+        // Add mobile menu toggle (for smaller screens)
+        const mobileMenuToggle = document.createElement('div');
+        mobileMenuToggle.innerHTML = '☰';
+        mobileMenuToggle.style.cssText = `
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #2d5a27;
+        `;
+
+        // Add to navigation
+        document.querySelector('.nav-container').appendChild(mobileMenuToggle);
+
+        // Mobile responsiveness
+        function checkScreenSize() {
+            if (window.innerWidth <= 768) {
+                mobileMenuToggle.style.display = 'block';
+                document.querySelector('.nav-links').style.display = 'none';
+            } else {
+                mobileMenuToggle.style.display = 'none';
+                document.querySelector('.nav-links').style.display = 'flex';
+            }
+        }
+
+        window.addEventListener('resize', checkScreenSize);
+        checkScreenSize();
+
+        // Mobile menu toggle functionality
+        let mobileMenuOpen = false;
+        mobileMenuToggle.addEventListener('click', () => {
+            const navLinks = document.querySelector('.nav-links');
+            if (!mobileMenuOpen) {
+                navLinks.style.display = 'flex';
+                navLinks.style.flexDirection = 'column';
+                navLinks.style.position = 'absolute';
+                navLinks.style.top = '100%';
+                navLinks.style.left = '0';
+                navLinks.style.right = '0';
+                navLinks.style.background = 'rgba(255,255,255,0.98)';
+                navLinks.style.padding = '1rem';
+                navLinks.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+                mobileMenuOpen = true;
+            } else {
+                navLinks.style.display = 'none';
+                mobileMenuOpen = false;
+            }
+        });
+
+        // Add loading animation
+        window.addEventListener('load', () => {
+            // Remove any existing loading screens
+            const existingLoader = document.querySelector('.loader');
+            if (existingLoader) {
+                existingLoader.remove();
+            }
+            
+            // Trigger animations
+            document.body.classList.add('loaded');
+        });
+
+        // Add easter egg - Konami code
+        let konamiCode = [];
+        const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
+        
+        document.addEventListener('keydown', (e) => {
+            konamiCode.push(e.code);
+            konamiCode = konamiCode.slice(-10);
+            
+            if (konamiCode.join('') === konamiSequence.join('')) {
+                // Easter egg activated!
+                document.body.style.background = 'linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57)';
+                document.body.style.backgroundSize = '400% 400%';
+                document.body.style.animation = 'gradient 3s ease infinite';
+                
+                // Add the gradient animation
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes gradient {
+                        0% { background-position: 0% 50%; }
+                        50% { background-position: 100% 50%; }
+                        100% { background-position: 0% 50%; }
+                    }
+                `;
+                document.head.appendChild(style);
+                
+                // Show congratulations message
+                const congratsMsg = document.createElement('div');
+                congratsMsg.innerHTML = '🎉 Congratulations! You found the secret AgriSense code! 🌱';
+                congratsMsg.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: rgba(76, 175, 80, 0.95);
+                    color: white;
+                    padding: 2rem;
+                    border-radius: 15px;
+                    font-size: 1.2rem;
+                    z-index: 10000;
+                    text-align: center;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                `;
+                document.body.appendChild(congratsMsg);
+                
+                setTimeout(() => {
+                    congratsMsg.remove();
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
